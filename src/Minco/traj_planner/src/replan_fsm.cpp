@@ -1,3 +1,9 @@
+/**
+ * @Author: Xia Yunkai
+ * @Date:   2023-08-02 00:49:39
+ * @Last Modified by:   Xia Yunkai
+ * @Last Modified time: 2023-08-02 01:10:24
+ */
 #include <plan_manage/replan_fsm.h>
 #include <chrono>
 
@@ -57,10 +63,10 @@ void ReplanFSM::OdomCallback(const nav_msgs::Odometry& msg)
 void ReplanFSM::ParkingCallback(const geometry_msgs::PoseStamped &msg)
 {
     std::cout << "Triggered parking mode!" << std::endl;
-    // end_pt_ << msg.pose.position.x, msg.pose.position.y, 
-    //            tf::getYaw(msg.pose.orientation), 1.0e-2;
-    end_pt_ << target_x_, target_y_, 
-               target_yaw_, 1.0e-2;
+    end_pt_ << msg.pose.position.x, msg.pose.position.y, 
+               tf::getYaw(msg.pose.orientation), 1.0e-2;
+    // end_pt_ << target_x_, target_y_, 
+    //            target_yaw_, 1.0e-2;
     std::cout<<"end_pt: "<<end_pt_.transpose()<<std::endl;
     
     have_target_ = true;
@@ -124,7 +130,7 @@ void ReplanFSM::execFSMCallback(const ros::TimerEvent &e)
             planner_ptr_->setInitStateAndInput(init_state_, start_time);
             planner_ptr_->setParkingEnd(end_pt_);
             planner_ptr_->getKinoPath(end_pt_, true);
-            // planner_ptr_->displayPolyH(planner_ptr_->display_hPolys());
+            planner_ptr_->displayPolyH(planner_ptr_->display_hPolys());
             planner_ptr_->displayKinoPath(planner_ptr_->display_kino_path());
             planner_ptr_->RunMINCOParking();
             planner_ptr_->broadcastTraj2SwarmBridge();
